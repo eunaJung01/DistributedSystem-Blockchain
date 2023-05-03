@@ -1,12 +1,31 @@
 {
   "name": "blockchain",
   "version": "1.0.0",
-  "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eunaJung01/Blockchain.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eunaJung01/Blockchain/issues"
+  },
+  "homepage": "https://github.com/eunaJung01/Blockchain#readme",
+  "description": "",
+  "devDependencies": {
+    "@babel/preset-env": "^7.21.5",
+    "@babel/preset-typescript": "^7.21.5",
+    "@types/jest": "^29.5.1",
+    "@types/node": "^18.16.3",
+    "babel-core": "^6.26.3",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
 }
