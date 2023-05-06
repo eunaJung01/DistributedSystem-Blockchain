@@ -4,3 +4,6 @@
 # Editor-based HTTP Client requests
 /httpRequests/
 /node_modules
+package-lock.json
+package.json
+.idea
