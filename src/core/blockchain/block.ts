@@ -1,5 +1,6 @@
 import {SHA256} from 'crypto-js';
 import merkle from 'merkle';
+import hexToBinary from 'hex-to-binary';
 import {BlockHeader} from './blockHeader';
 import {IBlock} from "Block";
 import {Failable} from "Failable";
@@ -9,11 +10,6 @@ import {
     DIFFICULTY_ADJUSTMENT_INTERVAL,
     GENESIS
 } from "@core/config";
-
-// import hexToBinary from 'hex-to-binary';
-function hex2bin(hex: string) {
-    return (parseInt(hex, 16).toString(2)).padStart(8, '0');
-}
 
 export class Block extends BlockHeader implements IBlock {
     public hash: string;
@@ -66,7 +62,7 @@ export class Block extends BlockHeader implements IBlock {
             _generateBlock.nonce = nonce;
             hash = Block.createBlockHash(_generateBlock);
 
-            const binary: string = hex2bin(hash);
+            const binary: string = hexToBinary(hash);
             const result: boolean = binary.startsWith("0".repeat(_generateBlock.difficulty));
             if (result) {
                 _generateBlock.hash = hash;
