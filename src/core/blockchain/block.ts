@@ -49,7 +49,7 @@ export class Block extends BlockHeader implements IBlock {
                                 _data: string[],
                                 _adjustmentBlock: Block): Block {
         const generateBlock = new Block(_previousBlock, _data, _adjustmentBlock);
-        return Block.findBlock(generateBlock);
+        return Block.findBlock(generateBlock); // Mining이 완료된 블록을 반환한다.
     }
 
     // Mining
@@ -81,7 +81,7 @@ export class Block extends BlockHeader implements IBlock {
 
         // 2. interval 단위의 배수일 때만 난이도 변경 코드를 실행한다.
         // 아닐 경우에는 기존의 difficulty를 그대로 쓴다.
-        if (_newBlock.height % DIFFICULTY_ADJUSTMENT_INTERVAL !== 1) {
+        if (_newBlock.height % DIFFICULTY_ADJUSTMENT_INTERVAL !== 0) {
             return _previousBlock.difficulty;
         }
 
