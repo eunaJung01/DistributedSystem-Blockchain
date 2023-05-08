@@ -1,5 +1,5 @@
-import {Block} from "@core/blockchain/block";
-import {GENESIS} from "@core/config";
+import {Block} from "./block";
+import {GENESIS} from "../config";
 
 describe('Block 검증', () => {
     const genesisBlock: Block = {

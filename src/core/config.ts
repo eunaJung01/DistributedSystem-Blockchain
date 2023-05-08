@@ -1,6 +1,6 @@
-import {Block} from "@core/blockchain/block";
-
 // 난이도 조정 블록 범위
+import {Block} from "./blockchain/block";
+
 export const DIFFICULTY_ADJUSTMENT_INTERVAL: number = 10;
 
 // 블럭 생성 시간 (단위 : 분)

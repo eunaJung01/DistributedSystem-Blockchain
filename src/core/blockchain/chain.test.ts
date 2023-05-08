@@ -1,4 +1,4 @@
-import {Chain} from "@core/blockchain/chain";
+import {Chain} from "./chain";
 
 describe("Chain 함수 체크", () => {
     let node: Chain = new Chain(); // GENESIS

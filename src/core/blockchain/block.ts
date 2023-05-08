@@ -2,14 +2,14 @@ import {SHA256} from 'crypto-js';
 import merkle from 'merkle';
 import hexToBinary from 'hex-to-binary';
 import {BlockHeader} from './blockHeader';
-import {IBlock} from "Block";
-import {Failable} from "Failable";
 import {
     BLOCK_GENERATION_INTERVAL,
     BLOCK_GENERATION_TIME_UNIT,
     DIFFICULTY_ADJUSTMENT_INTERVAL,
     GENESIS
-} from "@core/config";
+} from "../config";
+import {IBlock} from "Block";
+import {Failable} from "Failable";
 
 export class Block extends BlockHeader implements IBlock {
     public hash: string;

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
     "outDir": "./dist/",
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -10,13 +12,19 @@
       "./node_modules/@types",
       "./@types"
     ],
+    "declaration": true,
+    "declarationDir": "./@types",
     "paths": {
       "@core/*": [
-        "src/core/*"
+        "/src/core/*"
       ],
       "*": [
         "@types/*"
       ]
     }
+  },
+  "ts-node": {
+    "esm": true,
+    "files": true
   }
 }
