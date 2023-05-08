@@ -36,6 +36,7 @@ app.post("/addToPeer", (req, res) => {
 app.get("/peers", (req, res) => {
     const sockets = ws.getSockets().map((s: any) =>
         s._sockets.remoteAddress + ": " + s._sockets.remotePort);
+    res.json(sockets);
 });
 
 app.listen(3000, () => {
