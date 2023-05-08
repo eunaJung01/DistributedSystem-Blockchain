@@ -22,7 +22,7 @@ export class P2PServer extends Chain {
         this.sockets = [];
     }
 
-    getSockets() {
+    public getSockets() {
         return this.sockets;
     }
 
@@ -30,10 +30,10 @@ export class P2PServer extends Chain {
      * Server
      * 클라이언트가 연결을 시도했을 때 실행되는 코드
      */
-    listen() {
+    public listen() {
         const server = new WebSocket.Server({port: 7545});
 
-        // connection
+        // Client와 웹 소켓이 연결되었을 때 connectSocket() 메서드가 실행된다.
         server.on("connection", (socket) => {
             console.log("webSocket connected");
             this.connectSocket(socket);
@@ -43,24 +43,25 @@ export class P2PServer extends Chain {
     /**
      * Client
      * 서버 쪽으로 연결 요청 시 실행되는 코드
+     * @param newPeer 요청을 보낼 URL
      */
-    connectToPeer(newPeer: string) {
+    public connectToPeer(newPeer: string) {
+        // 해당 URL(newPeer)을 가지고 있는 노드와 웹 소켓이 연결된다.
         const socket = new WebSocket(newPeer);
 
-        // open
+        // 웹 소켓이 연결되었을 때 Client 입장에서의 이벤트명 : open
+        // open 이벤트 발생 이후 connectSocket() 메서드가 실행된다.
         socket.on("open", () => {
             this.connectSocket(socket);
         });
     }
 
-    connectSocket(socket: WebSocket) {
+    public connectSocket(socket: WebSocket) {
+        // 연결된 소켓 정보를 배열에 담아 저장한다. (향후 broadcasting을 하기 위함)
         this.sockets.push(socket);
-        // socket.on("message", (data: string) => {
-        //     console.log(data);
-        // });
-        // socket.send("message from server");
 
-        this.messageHandler(socket);
+        this.messageHandler(socket); // 데이터를 전달받을 수 있는 준비 상태가 만들어진다.
+
         const data: Message = {
             type: MessageType.latest_block,
             payload: {},
@@ -68,7 +69,7 @@ export class P2PServer extends Chain {
         this.errorHandler(socket);
 
         const send = P2PServer.send(socket);
-        send(data);
+        send(data); // 데이터를 전달한다.
     }
 
     private messageHandler(socket: WebSocket) {
@@ -86,27 +87,30 @@ export class P2PServer extends Chain {
                     break;
                 }
                 case MessageType.all_block: {
-                    const message: Message = {
-                        type: MessageType.receivedChain,
-                        payload: this.getChain(),
-                    }
-                    // TODO: 체인에 블록을 추가할지 말지를 결정해야 한다.
+                    // 체인에 블록을 추가할지 말지를 결정해야 한다.
                     const [receivedBlock] = result.payload; // [this.getLatestBlock()]
                     const isValid = this.addToChain(receivedBlock);
                     if (!isValid.isError) { // addToChain이 성공했을 때에는 추가적인 요청이 필요하지 않다.
                         break;
+                    }
+                    const message: Message = {
+                        type: MessageType.receivedChain,
+                        payload: this.getChain(),
                     }
                     send(message);
                     break;
                 }
                 case MessageType.receivedChain: {
                     const receivedChain: Block[] = result.payload;
-                    // TODO: 체인을 교체하는 코드 필요 (보다 긴 체인을 선택)
+                    // 체인을 교체할지 말지를 결정해야 한다. (보다 긴 체인을 선택)
                     this.handleChainResponse(receivedChain);
                     break;
                 }
             }
         };
+
+        // socket.on() 메서드에 의해 "message" 이벤트가 발생했을 때 (즉, 데이터를 전달 받았을 때)
+        // 두 번째 인자값으로 들어간 callback 함수가 실행되게 된다.
         socket.on("message", callback);
     }
 
@@ -115,10 +119,10 @@ export class P2PServer extends Chain {
             this.sockets.splice(this.sockets.indexOf(socket), 1);
         };
 
-        // socket이 끊겼을 경우
+        // socket이 끊겼을 경우 (즉, "close" 이벤트가 발생했을 때)
         socket.on("close", close);
 
-        // error가 발생했을 경우
+        // error가 발생했을 경우 (즉, "error" 이벤트가 발생했을 때)
         socket.on("error", close);
     }
 
