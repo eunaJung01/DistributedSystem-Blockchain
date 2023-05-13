@@ -23,7 +23,7 @@ export class Chain {
 
     public addBlock(data: string[]): Failable<Block, string> {
         const previousBlock: Block = this.getLatestBlock();
-        const adjustmentBlock: Block = this.getAdjustmentBlock();
+        const adjustmentBlock: Block = this.getAdjustmentBlock(); // 10번째 전 블록 혹은 GENESIS 블록
         const newBlock: Block = Block.generateBlock(previousBlock, data, adjustmentBlock);
         const isValid: Failable<Block, string> = Block.isValidNewBlock(newBlock, previousBlock);
 
@@ -59,6 +59,9 @@ export class Chain {
 
     // Chain 검증
     public isValidChain(_chain: Block[]): Failable<undefined, string> {
+        if (JSON.stringify(_chain[0]) !== JSON.stringify(this.blockchain[0])) {
+            return {isError: true, error: "GENESIS 블록이 다릅니다."}
+        }
         for (let i = 1; i < _chain.length; i++) {
             const newBlock = _chain[i];
             const previousBlock = _chain[i - 1];
