@@ -147,7 +147,7 @@ export class P2PServer extends Chain {
         return {isError: false, value: undefined}
     }
 
-    private broadcast(message: Message): void {
+    public broadcast(message: Message): void {
         this.sockets.forEach((socket) => P2PServer.send(socket)(message));
     }
 

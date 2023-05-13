@@ -12,8 +12,6 @@
       "./node_modules/@types",
       "./@types"
     ],
-    "declaration": true,
-    "declarationDir": "./@types",
     "paths": {
       "@core/*": [
         "/src/core/*"

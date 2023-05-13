@@ -1,14 +1,14 @@
-import type {Config} from '@jest/types';
+import type {Config} from "@jest/types";
 
 const config: Config.InitialOptions = {
-    moduleFileExtensions: ['ts', 'js'],
-    testMatch: ['<rootDir>/**/*.test.(js|ts)'],
+    moduleFileExtensions: ["ts", "js"],
+    testMatch: ["<rootDir>/**/*.test.(js|ts)"],
     moduleNameMapper: {
-        '^@core/(.*)$': '<rootDir>/src/core/$1',
+        "^@core/(.*)$": "<rootDir>/src/core/$1",
     },
-    testEnvironment: 'node',
+    testEnvironment: "node",
     verbose: true,
-    preset: 'ts-jest',
+    preset: "ts-jest",
 };
 
 export default config;
