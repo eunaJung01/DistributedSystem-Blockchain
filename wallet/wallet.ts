@@ -1,6 +1,5 @@
 import {randomBytes} from "crypto";
 import elliptic from "elliptic";
-import {SHA256} from "crypto-js";
 import fs from "fs";
 import path from "path";
 
@@ -43,6 +42,19 @@ export class Wallet {
     public getPublicKey(): string {
         const keyPair = ec.keyFromPrivate(this.privateKey);
         return keyPair.getPublic().encode("hex", true);
+    }
+
+    static getWalletList(): string[] {
+        // dir : 디렉토리명
+        // 디렉토리 안에 있는 파일 목록을 가져온다.
+        return fs.readdirSync(dir);
+    }
+
+    // 계정 정보를 받아서 개인키를 구한다.
+    static getWalletPrivateKey(_account: string): string {
+        const filePath = path.join(dir, _account);
+        const fileContent = fs.readFileSync(filePath);
+        return fileContent.toString();
     }
 
 }

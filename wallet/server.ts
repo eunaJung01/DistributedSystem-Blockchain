@@ -37,3 +37,17 @@ app.post("/newWallet", (req, res) => {
 app.listen(3005, () => {
     console.log("server onload port # : 3005");
 });
+
+// list
+app.post("/walletList", (req, res) => {
+    const list = Wallet.getWalletList();
+    res.json(list);
+});
+
+// view
+app.get("/wallet/:account", (req, res) => {
+    const {account} = req.params;
+    console.log("wallet", account);
+    const privateKey = Wallet.getWalletPrivateKey(account);
+    res.json(new Wallet(privateKey));
+});
