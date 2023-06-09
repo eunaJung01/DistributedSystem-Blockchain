@@ -2,6 +2,7 @@ import {randomBytes} from "crypto";
 import elliptic from "elliptic";
 import fs from "fs";
 import path from "path";
+import {SHA256} from "crypto-js";
 
 const dir = path.join(__dirname, "../data");
 
@@ -13,7 +14,7 @@ export class Wallet {
     public publicKey: string;
     public balance: number;
 
-    // 1. privateKey를 인자값을 넣을 경우, 그 privateKey를 이용해 지갑 내용을 생성한다.
+    // 1. privateKey 인자값을 넣을 경우, 그 privateKey를 이용해 지갑 내용을 생성한다.
     // 2. 인자값이 없을 경우, 기존에 만들어 놓은 메서드를 사용해 지갑 내용을 생성한다.
     constructor(_privateKey: string = "") {
         this.privateKey = _privateKey || this.getPrivateKey();
@@ -55,6 +56,20 @@ export class Wallet {
         const filePath = path.join(dir, _account);
         const fileContent = fs.readFileSync(filePath);
         return fileContent.toString();
+    }
+
+    static createSign(_obj: any): elliptic.ec.Signature {
+        const {
+            sender: {publicKey, account},
+            received,
+            amount,
+        } = _obj;
+
+        const hash: string = SHA256([publicKey, received, amount].join('')).toString();
+        const privateKey: string = Wallet.getWalletPrivateKey(account);
+
+        const keyPair: elliptic.ec.KeyPair = ec.keyFromPrivate(privateKey);
+        return keyPair.sign(hash, "hex");
     }
 
 }
