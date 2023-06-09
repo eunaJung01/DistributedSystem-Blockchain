@@ -16,6 +16,9 @@
       "@core/*": [
         "/src/core/*"
       ],
+      "@wallet/*": [
+        "/wallet/*"
+      ],
       "*": [
         "@types/*"
       ]
