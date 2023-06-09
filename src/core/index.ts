@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import {P2PServer} from "./server/p2p";
+import {P2PServer} from "../server/p2p";
 
 const app = express();
 const ws = new P2PServer();
