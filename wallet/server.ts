@@ -34,10 +34,6 @@ app.post("/newWallet", (req, res) => {
     res.json(new Wallet());
 });
 
-app.listen(3005, () => {
-    console.log("server onload port # : 3005");
-});
-
 // list
 app.post("/walletList", (req, res) => {
     const list = Wallet.getWalletList();
@@ -45,11 +41,17 @@ app.post("/walletList", (req, res) => {
 });
 
 // view
-app.get("/wallet/:account", (req, res) => {
+app.get("/wallet/:account", async (req, res) => {
     const {account} = req.params;
     console.log("wallet", account);
     const privateKey = Wallet.getWalletPrivateKey(account);
-    res.json(new Wallet(privateKey));
+    const myWallet = new Wallet(privateKey);
+
+    // 잔액 가져오기
+    const response = await request.post("/getBalance", {account})
+    myWallet.balance = response.data.balance;
+
+    res.json(myWallet);
 });
 
 // 아래 요청을 받은 지갑 서버는
@@ -76,4 +78,8 @@ app.post("/sendTransaction", async (req, res) => {
     const response = await request.post("/sendTransaction", txObject);
     console.log(response.data);
     res.json();
+});
+
+app.listen(3005, () => {
+    console.log("server onload port # : 3005");
 });

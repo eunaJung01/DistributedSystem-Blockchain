@@ -7,6 +7,7 @@ enum MessageType {
     latest_block = 0,
     all_block = 1,
     receivedChain = 2,
+    receivedTx = 3,
 }
 
 interface Message {
@@ -106,6 +107,27 @@ export class P2PServer extends Chain {
                     this.handleChainResponse(receivedChain);
                     break;
                 }
+                case MessageType.receivedTx: {
+                    const receivedTransaction: ITransaction = result.payload;
+                    if (receivedTransaction === null) {
+                        break;
+                    }
+
+                    const withTransaction = this.getTransactionPool().find((_tx: ITransaction) => {
+                        return _tx.hash === receivedTransaction.hash;
+                    });
+
+                    // 내 풀에 받은 트랜잭션 내용이 없다면 추가한다.
+                    if (!withTransaction) {
+                        this.appendTransactionPool(receivedTransaction);
+                        const message: Message = {
+                            type: MessageType.receivedTx,
+                            payload: receivedTransaction,
+                        };
+                        this.broadcast(message);
+                    }
+                    break;
+                }
             }
         };
 
@@ -160,4 +182,5 @@ export class P2PServer extends Chain {
     private static dataParse<T>(_data: string): T {
         return JSON.parse(Buffer.from(_data).toString());
     }
+
 }

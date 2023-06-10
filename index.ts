@@ -13,6 +13,7 @@ enum MessageType {
     latest_block = 0,
     all_block = 1,
     receivedChain = 2,
+    receivedTx = 3,
 }
 
 interface Message {
@@ -91,11 +92,32 @@ app.get("/peers", (req, res) => {
 app.post("/sendTransaction", (req, res) => {
     try {
         const receivedTx: ReceivedTx = req.body;
-        Wallet.sendTransaction(receivedTx, ws.getUnspentTxOuts());
+        console.log("receivedTx : ", receivedTx);
+
+        // 블록체인 네트워크의 진입점
+        const tx = Wallet.sendTransaction(receivedTx, ws.getUnspentTxOuts());
+        ws.appendTransactionPool(tx);
+        ws.updateUTXO(tx);
+
+        // 트랜잭션 broadcast
+        const message: Message = {
+            type: MessageType.receivedTx,
+            payload: tx,
+        };
+        ws.broadcast(message);
+
     } catch (e) {
         if (e instanceof Error) console.log(e.message);
     }
     res.json({});
+});
+
+app.post("/getBalance", (req, res) => {
+    const {account} = req.body;
+    const balance = Wallet.getBalance(account, ws.getUnspentTxOuts());
+    res.json({
+        balance,
+    });
 });
 
 app.listen(3000, () => {
