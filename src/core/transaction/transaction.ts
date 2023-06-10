@@ -27,4 +27,15 @@ export class Transaction implements ITransaction {
         });
     }
 
+    public static createTransaction(_receivedTx: any, _myUTXO: UnspentTxOut[]): Transaction {
+        // 1. utxo -> txIns[]
+        const {sum, txIns} = TxIn.createTxIns(_receivedTx, _myUTXO);
+
+        // 2. txIn -> txOuts[]
+        const txOuts: TxOut[] = TxOut.createTxOuts(sum, _receivedTx);
+
+        // 3. new Transaction()
+        return new Transaction(txIns, txOuts);
+    }
+
 }

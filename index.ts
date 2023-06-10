@@ -20,7 +20,7 @@ interface Message {
     payload: any;
 }
 
-// request header의 authorization 필드를 조회한다.
+// TODO: request header의 authorization 필드를 조회한다.
 // (다른 사람이 내 노드의 블록을 조회하는 것을 방지하기 위함)
 app.use((req, res, next) => {
     const baseAuth: string = (req.headers.authorization || '').split(' ')[1];
@@ -35,12 +35,12 @@ app.get("/", (req, res) => {
     res.send("bit-chain");
 });
 
-// 블록 내용 조회 API
+// TODO: 블록 내용 조회 API
 app.get("/chains", (req, res) => {
     res.json(ws.getChain());
 });
 
-// 블록 채굴 API
+// TODO: 블록 채굴 API
 app.post("/mineBlock", (req, res) => {
     const {data} = req.body;
     console.log(data);
@@ -71,7 +71,7 @@ app.post("/mineBlock", (req, res) => {
     res.json(newBlock.value);
 });
 
-// ws 연결 요청 API
+// TODO: ws 연결 요청 API
 app.post("/addToPeer", (req, res) => {
     const {peer} = req.body;
     console.log(peer);
@@ -79,7 +79,7 @@ app.post("/addToPeer", (req, res) => {
     res.json();
 });
 
-// 연결된 sockets 조회
+// TODO: 연결된 sockets 조회
 app.get("/peers", (req, res) => {
     const sockets = ws.getSockets().map((s: any) => {
         return s._socket.remoteAddress + ':' + s._socket.remotePort;
@@ -87,11 +87,11 @@ app.get("/peers", (req, res) => {
     res.json(sockets);
 });
 
-// sendTransaction 라우터 추가
+// TODO: sendTransaction 라우터 추가
 app.post("/sendTransaction", (req, res) => {
     try {
         const receivedTx: ReceivedTx = req.body;
-        Wallet.sendTransaction(receivedTx);
+        Wallet.sendTransaction(receivedTx, ws.getUnspentTxOuts());
     } catch (e) {
         if (e instanceof Error) console.log(e.message);
     }
