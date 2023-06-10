@@ -20,6 +20,17 @@ interface Message {
     payload: any;
 }
 
+// request header의 authorization 필드를 조회한다.
+// (다른 사람이 내 노드의 블록을 조회하는 것을 방지하기 위함)
+app.use((req, res, next) => {
+    const baseAuth: string = (req.headers.authorization || '').split(' ')[1];
+    if (baseAuth === '') return res.status(401).send();
+
+    const [userId, userPw] = Buffer.from(baseAuth, 'base64').toString().split(":");
+    if (userId !== 'web7722' || userPw !== '1234') return res.status(401).send();
+    next();
+});
+
 app.get("/", (req, res) => {
     res.send("bit-chain");
 });
