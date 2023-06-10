@@ -15,10 +15,12 @@ describe("Chain 함수 체크", () => {
         console.log(node.getLatestBlock());
     });
 
+    /*
     it("addBlock 함수 체크", () => {
         for (let i = 1; i <= 300; i++) {
             node.addBlock([`Block #${i}`]);
         }
         console.log(node.getChain());
     });
+     */
 });

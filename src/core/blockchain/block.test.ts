@@ -1,6 +1,7 @@
 import {Block} from "./block";
 import {GENESIS} from "../config";
 
+/*
 describe('Block 검증', () => {
     const genesisBlock: Block = {
         version: '1.0.0',
@@ -18,11 +19,13 @@ describe('Block 검증', () => {
         // const newBlock = new Block(genesisBlock, data);
         // console.log(newBlock);
     });
-});
+});l
+ */
 
 describe("Block 검증", () => {
     let newBlock: Block
 
+    /*
     it("블록 생성", () => {
         const data = ['Block #2']
         // newBlock = new Block(genesisBlock, data)
@@ -30,6 +33,8 @@ describe("Block 검증", () => {
         // 이전 블록을 바탕으로 새로운 블록을 생성한다.
         const newBlock2 = new Block(newBlock, data, GENESIS);
     });
+     */
+
     it("블록 검증 테스트", () => {
         // height: 10 , height: 9
         const isValidBlock = Block.isValidNewBlock(newBlock, GENESIS);

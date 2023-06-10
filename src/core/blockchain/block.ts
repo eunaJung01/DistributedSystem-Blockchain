@@ -16,9 +16,9 @@ export class Block extends BlockHeader implements IBlock {
     merkleRoot: string;
     difficulty: number;
     nonce: number;
-    data: string[];
+    data: ITransaction[];
 
-    constructor(_previousBlock: Block, _data: string[], _adjustmentBlock: Block) {
+    constructor(_previousBlock: Block, _data: ITransaction[], _adjustmentBlock: Block) {
         super(_previousBlock); // 상속받은 클래스의 속성을 모두 가져온다.
         this.hash = Block.createBlockHash(this);
         this.merkleRoot = Block.getMerkleRoot(_data);
@@ -51,7 +51,7 @@ export class Block extends BlockHeader implements IBlock {
     }
 
     public static generateBlock(_previousBlock: Block,
-                                _data: string[],
+                                _data: ITransaction[],
                                 _adjustmentBlock: Block): Block {
         const generateBlock = new Block(_previousBlock, _data, _adjustmentBlock);
         return Block.findBlock(generateBlock); // Mining이 완료된 블록을 반환한다.

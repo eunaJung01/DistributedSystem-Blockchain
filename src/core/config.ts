@@ -1,5 +1,5 @@
 // 난이도 조정 블록 범위
-import {Block} from "./blockchain/block";
+import {IBlock} from "Block";
 
 export const DIFFICULTY_ADJUSTMENT_INTERVAL: number = 10;
 
@@ -9,7 +9,7 @@ export const BLOCK_GENERATION_INTERVAL: number = 10;
 // 블럭 한 개당 생성되는 시간
 export const BLOCK_GENERATION_TIME_UNIT: number = 60;
 
-export const GENESIS: Block = {
+export const GENESIS: IBlock = {
     version: '1.0.0',
     height: 0,
     hash: '0'.repeat(64),
@@ -18,5 +18,5 @@ export const GENESIS: Block = {
     merkleRoot: '0'.repeat(64),
     difficulty: 0,
     nonce: 0,
-    data: ['GENESIS BLOCK'],
+    data: [],
 }

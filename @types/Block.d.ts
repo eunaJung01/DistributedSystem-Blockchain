@@ -9,6 +9,7 @@ export interface IBlock extends IBlockHeader {
     merkleRoot: string;
     hash: string;
     nonce: number;
+    difficulty: number;
     height: number;
-    data: string[];
+    data: ITransaction[];
 }

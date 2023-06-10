@@ -1,12 +1,18 @@
 import {Failable} from "Failable";
 import {Block} from "./block";
 import {DIFFICULTY_ADJUSTMENT_INTERVAL, GENESIS} from "../config";
+import {TxIn} from "../transaction/txin";
+import {TxOut} from "../transaction/txout";
+import {Transaction} from "../transaction/transaction";
+import {UnspentTxOut} from "../transaction/unspentTxOut";
 
 export class Chain {
-    public blockchain: Block[];
+    private blockchain: Block[];
+    private unspentTxOuts: IUnspentTxOut[];
 
     constructor() {
         this.blockchain = [Block.getGENESIS()];
+        this.unspentTxOuts = [];
     }
 
     public getChain(): Block[] {
@@ -21,9 +27,29 @@ export class Chain {
         return this.blockchain[this.getLength() - 1];
     }
 
-    public addBlock(data: string[]): Failable<Block, string> {
+    public getUnspentTxOuts(): IUnspentTxOut[] {
+        return this.unspentTxOuts;
+    }
+
+    public appendUTXO(utxo: UnspentTxOut[]): void {
+        this.unspentTxOuts.push(...utxo);
+    }
+
+    public miningBlock(_account: string): Failable<Block, string> {
+        // TODO: Transaction 객체 생성
+        const txin: ITxIn = new TxIn('', this.getLatestBlock().height + 1);
+        const txout: ITxOut = new TxOut(_account, 50);
+        const coinbaseTransaction: Transaction = new Transaction([txin], [txout]);
+        const utxo = coinbaseTransaction.createUTXO();
+        this.appendUTXO(utxo);
+
+        // TODO: addBlock() 호출
+        return this.addBlock([coinbaseTransaction]);
+    }
+
+    public addBlock(data: ITransaction[]): Failable<Block, string> {
         const previousBlock: Block = this.getLatestBlock();
-        const adjustmentBlock: Block = this.getAdjustmentBlock(); // 10번째 전 블록 혹은 GENESIS 블록
+        const adjustmentBlock: Block = this.getAdjustmentBlock(); // 10번째 전 블록 구하기
         const newBlock: Block = Block.generateBlock(previousBlock, data, adjustmentBlock);
         const isValid: Failable<Block, string> = Block.isValidNewBlock(newBlock, previousBlock);
 
@@ -73,6 +99,7 @@ export class Chain {
         return {isError: false, value: undefined}
     }
 
+    // Chain 교체
     public replaceChain(receivedChain: Block[]): Failable<undefined, string> {
         const latestReceivedBlock: Block = receivedChain[receivedChain.length - 1];
         const latestBlock: Block = this.getLatestBlock();

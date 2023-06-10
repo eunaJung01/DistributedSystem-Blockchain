@@ -1,3 +1,5 @@
+// Blockchain HTTP Server
+
 import express, {Request, Response} from 'express';
 import {P2PServer} from "./src/server/p2p";
 import {ReceivedTx, Wallet} from "./src/core/wallet/wallet";
@@ -31,14 +33,27 @@ app.get("/chains", (req, res) => {
 app.post("/mineBlock", (req, res) => {
     const {data} = req.body;
     console.log(data);
-    const newBlock = ws.addBlock(data);
 
+    /*
+    const newBlock = ws.addBlock(data);
     if (newBlock.isError) {
         return res.status(500).send(newBlock.error);
     }
     const message: Message = {
         type: MessageType.all_block,
         payload: [newBlock.value],
+    };
+     */
+
+    // Transaction 객체를 채우기 위한 정보로 account를 전달한다.
+    const newBlock = ws.miningBlock(data) // data == account
+
+    if (newBlock.isError) {
+        return res.status(500).send(newBlock.error);
+    }
+    const message: Message = {
+        type: MessageType.latest_block,
+        payload: {},
     };
 
     ws.broadcast(message);

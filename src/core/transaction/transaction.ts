@@ -3,10 +3,10 @@ import {TxOut} from "./txout";
 import {UnspentTxOut} from "./unspentTxOut";
 import {SHA256} from "crypto-js";
 
-export class Transaction {
+export class Transaction implements ITransaction {
     public hash: string;
-    public txIns: TxIn[];
-    public txOuts: TxOut[];
+    public txIns: ITxIn[];
+    public txOuts: ITxOut[];
 
     constructor(_txIns: TxIn[], _txOuts: TxOut[]) {
         this.txIns = _txIns;
@@ -14,14 +14,14 @@ export class Transaction {
         this.hash = this.createTransactionHash();
     }
 
-    private createTransactionHash(): string {
+    public createTransactionHash(): string {
         const txOutContext: string = this.txOuts.map((v) => Object.values(v).join('')).join('');
         const txInContext: string = this.txIns.map((v) => Object.values(v).join('')).join('');
         console.log(txOutContext, txInContext);
         return SHA256(txOutContext + txInContext).toString();
     }
 
-    private createUTXO(): UnspentTxOut[] {
+    public createUTXO(): UnspentTxOut[] {
         return this.txOuts.map((txOut: TxOut, index: number) => {
             return new UnspentTxOut(this.hash, index, txOut.account, txOut.amount);
         });
