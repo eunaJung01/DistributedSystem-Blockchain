@@ -23,4 +23,13 @@ describe("Chain 함수 체크", () => {
         console.log(node.getChain());
     });
      */
+
+    it("miningBlock() 함수 테스트", () => {
+        for (let i = 1; i <= 5; i++) {
+            node.miningBlock("15cc1446493edbe8843c40ed11526e9252f937f8");
+        }
+        console.log(node.getLatestBlock().data);
+        console.log(node.getUnspentTxOuts());
+    });
+
 });
