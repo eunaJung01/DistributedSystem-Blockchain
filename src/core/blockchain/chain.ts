@@ -5,14 +5,17 @@ import {TxIn} from "../transaction/txin";
 import {TxOut} from "../transaction/txout";
 import {Transaction} from "../transaction/transaction";
 import {UnspentTxOut} from "../transaction/unspentTxOut";
+import {IBlock} from "Block";
 
 export class Chain {
     private blockchain: Block[];
     private unspentTxOuts: IUnspentTxOut[];
+    private transactionPool: ITransaction[];
 
     constructor() {
         this.blockchain = [Block.getGENESIS()];
         this.unspentTxOuts = [];
+        this.transactionPool = [];
     }
 
     public getChain(): Block[] {
@@ -31,8 +34,18 @@ export class Chain {
         return this.unspentTxOuts;
     }
 
+    /*
     public appendUTXO(utxo: UnspentTxOut[]): void {
         this.unspentTxOuts.push(...utxo);
+    }
+     */
+
+    public getTransactionPool(): ITransaction[] {
+        return this.transactionPool;
+    }
+
+    public appendTransactionPool(_transaction: ITransaction): void {
+        this.transactionPool.push(_transaction);
     }
 
     public miningBlock(_account: string): Failable<Block, string> {
@@ -40,8 +53,10 @@ export class Chain {
         const txin: ITxIn = new TxIn('', this.getLatestBlock().height + 1);
         const txout: ITxOut = new TxOut(_account, 50);
         const coinbaseTransaction: Transaction = new Transaction([txin], [txout]);
+        /*
         const utxo = coinbaseTransaction.createUTXO();
         this.appendUTXO(utxo);
+         */
 
         // TODO: addBlock() 호출
         return this.addBlock([coinbaseTransaction]);
@@ -57,6 +72,16 @@ export class Chain {
             return {isError: true, error: isValid.error};
         }
         this.blockchain.push(newBlock);
+
+        // UTXO 업데이트
+        newBlock.data.forEach((_tx: ITransaction) => {
+            this.updateUTXO(_tx);
+        });
+
+        // 트랜잭션 풀 최신화
+        // 블록이 생성되었다면 트랜잭션 풀에 있는 트랜잭션은 제거한다.
+        this.updateTransactionPool(newBlock);
+
         return {isError: false, value: newBlock};
     }
 
@@ -111,6 +136,58 @@ export class Chain {
         }
         // 내 체인이 더 짧다면 체인을 바꿔준다.
         this.blockchain = receivedChain;
+
+        // UTXO & 트랜잭션 풀 업데이트
+        this.blockchain.forEach((_block: IBlock) => {
+            this.updateTransactionPool(_block);
+            _block.data.forEach((_tx: ITransaction) => {
+                this.updateUTXO(_tx);
+            });
+        });
+
         return {isError: false, value: undefined}
     }
+
+    public updateUTXO(_tx: ITransaction): void {
+        const unspentTxOuts: UnspentTxOut[] = this.getUnspentTxOuts();
+
+        // UTXO에 추가할 unspentTxOut 객체 생성
+        const newUnspentTxOuts = _tx.txOuts.map((txout, index) => {
+            return new UnspentTxOut(_tx.hash, index, txout.account, txout.amount);
+        });
+
+        // 1. UTXO에서 사용한 unspentTxOut 객체는 제거한다.
+        // 2. 생성된 unspentTxOut 객체를 UTXO에 추가한다.
+        const tmp = unspentTxOuts
+            .filter((_v: UnspentTxOut) => {
+                const bool = _tx.txIns.find((v: TxIn) => {
+                    return _v.txOutId === v.txOutId && _v.txOutIndex === v.txOutIndex;
+                });
+                return !bool;
+            })
+            .concat(newUnspentTxOuts);
+
+        let unspentTmp: UnspentTxOut[] = [];
+        this.unspentTxOuts = tmp.reduce((acc, utxo) => {
+            const find = acc.find(({txOutId, txOutIndex}) => {
+                return txOutId === utxo.txOutId && txOutIndex === utxo.txOutIndex;
+            });
+            if (!find) acc.push(utxo);
+            return acc;
+        }, unspentTmp);
+    }
+
+    // 트랜잭션 풀 최신화
+    public updateTransactionPool(_newBlock: IBlock) {
+        let txPool: ITransaction[] = this.getTransactionPool();
+
+        _newBlock.data.forEach((tx: ITransaction) => {
+            txPool = txPool.filter((txp) => {
+                txp.hash !== tx.hash;
+            });
+        });
+
+        this.transactionPool = txPool;
+    }
+
 }
