@@ -1,6 +1,6 @@
 declare interface ITxOut {
     account: string; // 주소
-    amount: number; // 잔액
+    amount: number; // 금액
 }
 
 declare interface ITxIn {
